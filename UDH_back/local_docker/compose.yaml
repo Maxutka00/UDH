@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    container_name: db
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: MGU_STARTAPP_TEST
+      POSTGRES_USER: MGU_STARTAPP_TEST_NAME
+      POSTGRES_PASSWORD: oifjpo90dfc2nioclwkof2csc
+    networks:
+      - network
+
+
+  python_app:
+    build:
+      context: ../
+      dockerfile: local_docker/Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=MGU_STARTAPP_TEST
+      - DB_USER=MGU_STARTAPP_TEST_NAME
+      - DB_USER_PASSWORD=oifjpo90dfc2nioclwkof2csc
+      - DB_HOST=db
+      - DB_PORT=5432
+      - APP_SECRET_KEY="fpijerdmfokwepjinfcwefiowe"
+      - TOKEN_KEY="POSJFIPOSDJFPOSDFJKSPDOFKSPOFSF!#!@DQ3123"
+      - ARTICLE_MAX_BODY_LEN=15_000
+      - ARTICLE_MAX_ANNOT_LEN=1500
+      - ARTICLE_MAX_PICTURE_SIZE=2000000 #(10 ** 6) * 2
+      - ARTICLE_MAX_TITLE_LEN=100
+
+    networks:
+      - network
+
+networks:
+  network: {}
+
+
